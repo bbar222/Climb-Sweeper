@@ -61,11 +61,9 @@ for row in range(field.shape[0]):
     localMines = 0
     for col in range(field.shape[1]):
 
-       # print("testing coordinates",row,", ",col)
-
         if field[row][col] == tiles.get("mine"):
             # Do not need to check as there is a mine here
-            print("found a mine. skipping")
+            # print("found a mine. skipping")
             localMines = 0
             continue
 
@@ -77,9 +75,8 @@ for row in range(field.shape[0]):
         # Check below
         checkBelow(row, col)
 
-# Print the board
-for ro in field:
-    for co in ro:
-        print(co,end = "\t")
-    print()
-
+# # Print the board
+# for ro in field:
+#     for co in ro:
+#         print(co,end="\t")
+#     print()

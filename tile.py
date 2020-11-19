@@ -11,13 +11,15 @@ CYAN = (0, 255, 255)
 MAGENTA = (255, 0, 255)
 
 
-class square(pygame.sprite.Sprite):
-    def __init__(self, color, width, height):
+class tile(pygame.sprite.Sprite):
+
+    def __init__(self, color, width, height, imagePath):
         super().__init__()
 
         self.image = pygame.Surface([width, height])
         self.image.fill(WHITE)
         self.image.set_colorkey(WHITE)
-
+        self.image = pygame.image.load(imagePath)
+        #self.image = pygame.image.load("resources/images/tileFlag.png")
         pygame.draw.rect(self.image, color, [0, 0, width, height])
         self.rect = self.image.get_rect()
