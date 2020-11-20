@@ -39,9 +39,9 @@ for row in range(FieldMaker.field.shape[0]):
         if currentTile == -1:
             boardTile = tile(RED, 50, 50, "resources/images/tileMine.png")
         elif currentTile == 0:
-            boardTile = tile(GRAY, 50, 50, "resources/images/tileEmpty.png")
+            boardTile = tile(GRAY, 50, 50, "NONE")
         else:
-            boardTile = tile(WHITE, 50, 50, "resources/images/tileFlag.png")
+            boardTile = tile(CYAN, 50, 50, "resources/images/tileFlag.png")
         boardTile.rect.x = width/6 + col * 60
         boardTile.rect.y = 20 + row * 75
 
@@ -58,8 +58,14 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             print(pygame.mouse.get_pos())
+            mouseX, mouseY = event.pos
+
+
+           # for square in game_board:
+            #    if square.rect.collidepoint(mouseX,mouseY):
+              #      game_board.
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_r:
                 background = RED
