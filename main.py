@@ -20,6 +20,11 @@ YELLOW = (255, 255, 0)
 CYAN = (0, 255, 255)
 MAGENTA = (255, 0, 255)
 NULLCOLOR = (255, 255, 255)
+PURPLE = (160,32,240)
+ORANGE = (255, 165, 0)
+BROWN = (150,75,0)
+
+
 
 background = (53,115,176)
 game_board = pygame.sprite.Group()
@@ -37,11 +42,27 @@ for row in range(FieldMaker.field.shape[0]):
     for col in range(FieldMaker.field.shape[1]):
         currentTile = FieldMaker.field[row][col]
         if currentTile == -1:
-            boardTile = tile(RED, 50, 50, "resources/images/tileMine.png")
+            boardTile = tile(RED, "resources/images/tileMine.png", False)
         elif currentTile == 0:
-            boardTile = tile(GRAY, 50, 50, "NONE")
+            boardTile = tile(GRAY, "resources/images/tileEmpty.png", False)
+        elif currentTile == 1:
+            boardTile = tile(BLACK, "resources/images/tileOne.png", False)
+        elif currentTile == 2:
+            boardTile = tile(BROWN, "resources/images/tileTwo.png", False)
+        elif currentTile == 3:
+            boardTile = tile(YELLOW, "resources/images/tileThree.png", False)
+        elif currentTile == 4:
+            boardTile = tile(GREEN, "resources/images/tileFour.png", False)
+        elif currentTile == 5:
+            boardTile = tile(BLUE, "resources/images/tileFive.png", False)
+        elif currentTile == 6:
+            boardTile = tile(PURPLE, "resources/images/tileSix.png", False)
+        elif currentTile == 7:
+            boardTile = tile(CYAN, "resources/images/tileSeven.png", False)
+        elif currentTile == 8:
+            boardTile = tile(MAGENTA, "resources/images/tileEight.png", False)
         else:
-            boardTile = tile(CYAN, 50, 50, "resources/images/tileFlag.png")
+            boardTile = tile(ORANGE, "resources/images/tileFlag.png", False)
         boardTile.rect.x = width/6 + col * 60
         boardTile.rect.y = 20 + row * 75
 
@@ -55,17 +76,10 @@ for row in range(FieldMaker.field.shape[0]):
 #all_sprites_list.add(grid)
 
 while running:
-    for event in pygame.event.get():
+    event_list = pygame.event.get()
+    for event in event_list:
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            print(pygame.mouse.get_pos())
-            mouseX, mouseY = event.pos
-
-
-           # for square in game_board:
-            #    if square.rect.collidepoint(mouseX,mouseY):
-              #      game_board.
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_r:
                 background = RED
@@ -75,7 +89,7 @@ while running:
                     if square.rect.y > height:
                         square.rect.y = 0
         #print(event)
-
+    game_board.update(event_list)
     screen.fill(background)
     all_sprites_list.draw(screen)
     pygame.display.update()
