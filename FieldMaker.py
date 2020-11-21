@@ -1,6 +1,6 @@
 import numpy as np
 
-ROWSIZE = 8
+ROWSIZE = 12
 field = np.random.randint(0, 101, (ROWSIZE, 8))
 
 

@@ -51,7 +51,7 @@ all_sprites_list = pygame.sprite.Group()
 
 print(FieldMaker.field)
 numTiles = 0
-for row in range(8):
+for row in range(FieldMaker.ROWSIZE):
     for col in range(FieldMaker.field.shape[1]):
         currentTile = FieldMaker.field[row][col]
         if 0 <= numTiles < 16:
@@ -100,12 +100,17 @@ while running:
     for event in event_list:
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.KEYDOWN:
+        elif event.type == pygame.USEREVENT:
+            if event.myID == 1:
+                print("You clicked on a mine!")
+                running = False
+        elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_DOWN:
                 for square in game_board:
                     square.rect.y += 10
                     if square.rect.y > height:
                         square.rect.y = 0
+
 
     #tileLeaveEvent = pygame.event.Event(pygame.USEREVENT, myID=TILE_LEAVE)
 # Reserves a pygame.USEREVENT for a custom use.
