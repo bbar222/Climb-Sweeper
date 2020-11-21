@@ -1,4 +1,5 @@
 import pygame
+import FieldMaker
 
 BLACK = (0, 0, 0)
 GRAY = (127, 127, 127)
@@ -14,7 +15,7 @@ COLORHIDDEN = (123,143,93)
 
 class tile(pygame.sprite.Sprite):
 
-    def __init__(self, color, image, startRevealed):
+    def __init__(self, color, image, startRevealed, boardR, boardC):
         super().__init__()
         # self.revealed = False
         # self.imageBorder = pygame.Surface([width,height])
@@ -37,13 +38,15 @@ class tile(pygame.sprite.Sprite):
         # self.rect = self.image.get_rect()
         # self.revealed = False
 
-        self.original_image = pygame.Surface((50, 50), pygame.SRCALPHA)
-        self.original_image = pygame.image.load(image)
-        pygame.draw.rect(self.original_image, color, self.original_image.get_rect(),5)
+        self.boardR = boardR
+        self.boardC = boardC
+        self.revealedTile = pygame.Surface((50, 50), pygame.SRCALPHA)
+        self.revealedTile = pygame.image.load(image)
+        pygame.draw.rect(self.revealedTile, color, self.revealedTile.get_rect(), 5)
 
-        self.click_image = pygame.Surface((50, 50), pygame.SRCALPHA)
-        # pygame.draw.rect(self.click_image, color, self.click_image.get_rect(),50)
-        pygame.draw.rect(self.click_image, (50, 200, 200), self.click_image.get_rect())
+        self.unrevealedTile = pygame.Surface((50, 50), pygame.SRCALPHA)
+        # pygame.draw.rect(self.unrevealedTile, color, self.unrevealedTile.get_rect(),50)
+        pygame.draw.rect(self.unrevealedTile, (50, 200, 200), self.unrevealedTile.get_rect())
 
         self.flag_image = pygame.Surface((50,50), pygame.SRCALPHA)
         self.flag_image = pygame.image.load("resources/images/tileFlag.png")
@@ -65,7 +68,27 @@ class tile(pygame.sprite.Sprite):
     #     self.image = self.revealedTile
 
 
+
+    def kill(self):
+        # print(self.boardR,",",self.boardC,"IS DEAD")
+        if self.image == self.flag_image and FieldMaker.field[self.boardR, self.boardC] == FieldMaker.tiles.get("mine"):
+            print("and it was a flagged mine!")
+            return 1
+        elif self.image == self.unrevealedTile and FieldMaker.field[self.boardR, self.boardC] == FieldMaker.tiles.get("mine"):
+            print("an unmarked mine escaped! yikes!")
+            return "dead"
+        elif self.image == self.flag_image and not FieldMaker.field[self.boardR, self.boardC] == FieldMaker.tiles.get("mine"):
+            print("You falsely flagged a mine!")
+            return "dead"
+        else:
+            return 0
+
+
+
+
     def update(self, event_list):
+        score = 0
+        #print(event_list)
         for event in event_list:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if self.rect.collidepoint(event.pos):
@@ -78,10 +101,21 @@ class tile(pygame.sprite.Sprite):
                         self.isFlag = True
                     else:
                         self.isFlag = False
+            # elif event.type == pygame.USEREVENT:
+            #     #print("its happening")
+            #     if event.myID == 1:
+            #         if self.image == self.flag_image:
+            #             pass
+            #             #print("A flag escaped")
+
 
         if self.isRevealed:
-            self.image = self.original_image
+            self.image = self.revealedTile
         elif self.isFlag:
             self.image = self.flag_image
         else:
-            self.image = self.click_image
+            self.image = self.unrevealedTile
+
+
+
+

@@ -1,6 +1,7 @@
 import numpy as np
 
-field = np.random.randint(0,101,(8,8))
+ROWSIZE = 8
+field = np.random.randint(0, 101, (ROWSIZE, 8))
 
 
 tiles = {"mine":-1,"empty":0}
@@ -8,10 +9,9 @@ tiles = {"mine":-1,"empty":0}
 
 
 
-
 for row in range(field.shape[0]):
     for col in range(field.shape[1]):
-        if field[row][col] >= 80:
+        if field[row][col] >= 85:
             field[row][col] = tiles.get("mine")
         else:
             field[row][col] = tiles.get("empty")
@@ -46,7 +46,7 @@ def checkSides(r,c):
 
 
 def checkBelow(r,c):
-    if r != 7:
+    if r != ROWSIZE - 1:
         if c != 0:
             if field[r + 1][c - 1] == tiles.get("mine"):
                 field[r][c] += 1
