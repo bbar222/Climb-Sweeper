@@ -101,6 +101,9 @@ class tile(pygame.sprite.Sprite):
                     self.isFlag = False
                     if FieldMaker.field[self.boardR, self.boardC] == FieldMaker.tiles.get("mine"):
                         pygame.event.post(CLICK_MINE)
+                        #   TODO: Auto-clear other surrounding zeroes
+
+
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                 if self.rect.collidepoint(event.pos):
                     if not self.isFlag:
