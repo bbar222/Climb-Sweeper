@@ -1,6 +1,6 @@
 import numpy as np
 
-ROWSIZE = 12
+ROWSIZE = 20
 field = np.random.randint(0, 101, (ROWSIZE, 8))
 
 
@@ -58,13 +58,11 @@ def checkBelow(r,c):
 
 
 for row in range(field.shape[0]):
-    localMines = 0
     for col in range(field.shape[1]):
 
         if field[row][col] == tiles.get("mine"):
             # Do not need to check as there is a mine here
             # print("found a mine. skipping")
-            localMines = 0
             continue
 
 

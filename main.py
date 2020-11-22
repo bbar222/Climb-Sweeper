@@ -2,8 +2,19 @@ import pygame
 from tile import tile
 import FieldMaker
 
-
 pygame.init()
+fxLineClear = pygame.mixer.Sound("resources/sounds/tilesRemoved.wav")
+fxMineClicked = pygame.mixer.Sound("resources/sounds/mineClicked.wav")
+fxTileClear = pygame.mixer.Sound("resources/sounds/tileCleared.wav")
+fxFlagPlaced = pygame.mixer.Sound("resources/sounds/flagPlaced.wav")
+
+fxLineClear.set_volume(.4)
+fxMineClicked.set_volume(.4)
+fxTileClear.set_volume(.4)
+fxFlagPlaced.set_volume(.4)
+
+
+
 size = 700, 640
 width, height = size
 screen = pygame.display.set_mode(size)
@@ -27,7 +38,7 @@ BROWN = (150,75,0)
 
 # Text display stuff
 score = 0
-font = pygame.font.Font('freesansbold.ttf', 32)
+font = pygame.font.Font('freesansbold.ttf', 26)
 text = font.render(str(score), True, BLACK)
 textRect = text.get_rect()
 
@@ -59,7 +70,7 @@ for row in range(FieldMaker.ROWSIZE):
         else:
             startRevealed = False
         if currentTile == -1 and 0 <= numTiles < 16:
-            boardTile = tile(RED, "resources/images/tileMine.png", not startRevealed, row, col)
+            boardTile = tile(BLACK, "resources/images/tileMine.png", not startRevealed, row, col)
         elif currentTile == -1:
             boardTile = tile(RED, "resources/images/tileMine.png", startRevealed, row, col)
         elif currentTile == 0:
@@ -101,7 +112,9 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.USEREVENT:
+            # If mine is clicked event
             if event.myID == 1:
+                fxMineClicked.play()
                 print("You clicked on a mine!")
                 running = False
         elif event.type == pygame.KEYDOWN:
@@ -110,6 +123,14 @@ while running:
                     square.rect.y += 10
                     if square.rect.y > height:
                         square.rect.y = 0
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            for square in game_board:
+                if square.rect.collidepoint(event.pos):
+                    fxTileClear.play()
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
+            for square in game_board:
+                if square.rect.collidepoint(event.pos):
+                    fxFlagPlaced.play()
 
 
     #tileLeaveEvent = pygame.event.Event(pygame.USEREVENT, myID=TILE_LEAVE)
@@ -121,10 +142,13 @@ while running:
             #event_list.append(tileLeaveEvent)
             game_board.remove(square)
             if square.kill() == "dead":
+                fxMineClicked.play()
                 print("YOU ARE DEAD")
                 running = False
+                break
             else:
                 score += square.kill()
+                fxLineClear.play()
 
             # square.rect.y = 0
 
@@ -132,7 +156,7 @@ while running:
     screen.fill(background)
     # Display score
 
-    text = font.render(str(score), True, BLACK)
+    text = font.render("Score: " + str(score), True, BLACK)
     screen.blit(text,textRect)
     #
     game_board.update(event_list)
