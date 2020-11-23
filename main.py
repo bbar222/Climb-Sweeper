@@ -9,11 +9,11 @@ fxTileClear = pygame.mixer.Sound("resources/sounds/tileCleared.wav")
 fxFlagPlaced = pygame.mixer.Sound("resources/sounds/flagPlaced.wav")
 fxStartGame = pygame.mixer.Sound("resources/sounds/recycle.wav")
 
-fxLineClear.set_volume(.4)
-fxMineClicked.set_volume(.4)
-fxTileClear.set_volume(.3)
-fxFlagPlaced.set_volume(.3)
-fxStartGame.set_volume(.4)
+fxLineClear.set_volume(.1)
+fxMineClicked.set_volume(.1)
+fxTileClear.set_volume(.1)
+fxFlagPlaced.set_volume(.1)
+fxStartGame.set_volume(.2)
 
 
 
@@ -46,18 +46,13 @@ all_sprites_list = pygame.sprite.Group()
 
 just_removed = pygame.sprite.Group()
 orderOfRemoved = []
-#playingSpace = tile(WHITE, width - (width / 4), height)
-#playingSpace.rect.x = width/8
-# grid = tile(RED, 5, 5)
-# grid.rect.x = width/2
-# grid.rect.y = height/2
 
-
-#MINE_LEAK = pygame.event.Event(pygame.USEREVENT, myID=2)
+ROWSIZE = 100
 
 
 def titleLoop():
     running = True
+    FieldMaker.newBoard(ROWSIZE)
     numTiles = 0
     all_sprites_list.empty()
     game_board.empty()
@@ -67,7 +62,7 @@ def titleLoop():
 
 
     print(FieldMaker.field)
-    for row in range(FieldMaker.ROWSIZE):
+    for row in range(ROWSIZE):
         for col in range(FieldMaker.field.shape[1]):
             currentTile = FieldMaker.field[row][col]
             if 0 <= numTiles < 16:
@@ -159,6 +154,7 @@ def titleLoop():
 
 
 def gameLoop(difficulty):
+
     running = True
     selfKill = False
     # Text display stuff
