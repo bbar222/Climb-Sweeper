@@ -11,8 +11,8 @@ fxStartGame = pygame.mixer.Sound("resources/sounds/recycle.wav")
 
 fxLineClear.set_volume(.4)
 fxMineClicked.set_volume(.4)
-fxTileClear.set_volume(.4)
-fxFlagPlaced.set_volume(.4)
+fxTileClear.set_volume(.3)
+fxFlagPlaced.set_volume(.3)
 fxStartGame.set_volume(.4)
 
 
@@ -44,6 +44,8 @@ background = (53,115,176)
 game_board = pygame.sprite.Group()
 all_sprites_list = pygame.sprite.Group()
 
+just_removed = pygame.sprite.Group()
+orderOfRemoved = []
 #playingSpace = tile(WHITE, width - (width / 4), height)
 #playingSpace.rect.x = width/8
 # grid = tile(RED, 5, 5)
@@ -51,7 +53,7 @@ all_sprites_list = pygame.sprite.Group()
 # grid.rect.y = height/2
 
 
-
+#MINE_LEAK = pygame.event.Event(pygame.USEREVENT, myID=2)
 
 
 def titleLoop():
@@ -59,6 +61,7 @@ def titleLoop():
     numTiles = 0
     all_sprites_list.empty()
     game_board.empty()
+    just_removed.empty()
 
     # Creates mine field
 
@@ -193,24 +196,44 @@ def gameLoop(difficulty):
                         fxFlagPlaced.play()
 
 
-        #tileLeaveEvent = pygame.event.Event(pygame.USEREVENT, myID=TILE_LEAVE)
-    # Reserves a pygame.USEREVENT for a custom use.
-    # If too many events are made a pygame.errorstandard pygame exception is raised.
+
         for square in game_board:
             square.rect.y += 1
             if square.rect.y > height:
-                #event_list.append(tileLeaveEvent)
-                game_board.remove(square)
                 if square.kill() == "dead":
                     fxMineClicked.play()
                     print("YOU ARE DEAD")
                     running = False
+                    game_board.remove(square)
+                    all_sprites_list.remove(square)
+                    just_removed.add(square)
+                    orderOfRemoved.append(square)
+                    if len(just_removed) > 7:
+                        for i in range(8):
+                            just_removed.remove(orderOfRemoved[0])
+                            orderOfRemoved.remove(orderOfRemoved[0])
                     break
+
                 else:
                     score += square.kill()
                     fxLineClear.play()
+                    game_board.remove(square)
+                    all_sprites_list.remove(square)
+                    just_removed.add(square)
+                    orderOfRemoved.append(square)
 
+                    # keeps track of the last 8 tiles so that they may be displayed again when the player loses
+                    if len(just_removed) > 7:
+                        for i in range(8):
+                            just_removed.remove(orderOfRemoved[0])
+                            orderOfRemoved.remove(orderOfRemoved[0])
+
+
+
+                # print(len(just_removed))
                 # square.rect.y = 0
+
+
 
         screen.fill(background)
         # Display score
@@ -220,18 +243,24 @@ def gameLoop(difficulty):
         #
         game_board.update(event_list)
         all_sprites_list.draw(screen)
+        just_removed.draw(screen)
         pygame.display.update()
 
 
         clock.tick(difficulty)
 
+    print(len(just_removed))
     if not selfKill:
-        for _ in range(50):
-            for square in game_board:
+        for _ in range(55):
+            for square in just_removed:
+                square.rect.y -= 1
+            for square in all_sprites_list:
                 square.rect.y -= 1
             screen.fill(background)
-            game_board.draw(screen)
+            all_sprites_list.draw(screen)
+            just_removed.draw(screen)
             pygame.display.update()
+
 
 
 def deadOverlay():
@@ -270,4 +299,3 @@ while True:
     titleLoop()
     gameLoop(difficulty=10)
     deadOverlay()
-

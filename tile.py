@@ -47,7 +47,6 @@ class tile(pygame.sprite.Sprite):
         pygame.draw.rect(self.revealedTile, color, self.revealedTile.get_rect(), 5)
 
 
-
         self.unrevealedTile = pygame.Surface((50, 50), pygame.SRCALPHA)
         # pygame.draw.rect(self.unrevealedTile, color, self.unrevealedTile.get_rect(),50)
         pygame.draw.rect(self.unrevealedTile, (50, 200, 200), self.unrevealedTile.get_rect())
@@ -88,14 +87,14 @@ class tile(pygame.sprite.Sprite):
             return 0
 
 
-
-
     def update(self, event_list):
         CLICK_MINE = pygame.event.Event(pygame.USEREVENT, myID=1)
         # print(event_list)
         for event in event_list:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                self.image.get_rect().move(100,100)
                 if self.rect.collidepoint(event.pos):
+
                     if not self.isRevealed:
                         self.isRevealed = not self.isRevealed
                     self.isFlag = False
@@ -125,6 +124,8 @@ class tile(pygame.sprite.Sprite):
             self.image = self.flag_image
         else:
             self.image = self.unrevealedTile
+
+
 
 
 
