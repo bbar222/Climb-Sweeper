@@ -8,8 +8,9 @@ fxMineClicked = pygame.mixer.Sound("resources/sounds/mineClicked.wav")
 fxTileClear = pygame.mixer.Sound("resources/sounds/tileCleared.wav")
 fxFlagPlaced = pygame.mixer.Sound("resources/sounds/flagPlaced.wav")
 fxStartGame = pygame.mixer.Sound("resources/sounds/recycle.wav")
-# TODO: two audio channels for overlapping sounds
-fxLineClear.set_volume(.1)
+
+
+fxLineClear.set_volume(1)
 fxMineClicked.set_volume(.1)
 fxTileClear.set_volume(.1)
 fxFlagPlaced.set_volume(.1)
@@ -234,7 +235,7 @@ def gameLoop(difficulty):
 
                 else:
                     score += square.kill()
-                    fxLineClear.play()
+                    pygame.mixer.Channel(1).play(fxLineClear)
                     game_board.remove(square)
                     all_sprites_list.remove(square)
                     just_removed.add(square)
