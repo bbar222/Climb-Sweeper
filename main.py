@@ -44,8 +44,8 @@ all_sprites_list = pygame.sprite.Group()
 just_removed = pygame.sprite.Group()
 orderOfRemoved = []
 
-ROWSIZE = 100
-MINEDENSITY = 85
+ROWSIZE = 10
+MINEDENSITY = 95
 
 # sets highscore
 global userHighScore
@@ -68,8 +68,6 @@ def titleLoop():
     running = True
     FieldMaker.newBoard(ROWSIZE, MINEDENSITY)
     numTiles = 0
-    rowsClimbed = 0
-    # TODO: increase speed based on rows climbed
     all_sprites_list.empty()
     game_board.empty()
     just_removed.empty()
@@ -77,7 +75,7 @@ def titleLoop():
     # Creates mine field
 
 
-    print(FieldMaker.field)
+   # print(FieldMaker.addMoreLines())
     for row in range(ROWSIZE):
         for col in range(FieldMaker.field.shape[1]):
             currentTile = FieldMaker.field[row][col]
@@ -177,13 +175,16 @@ def titleLoop():
 
 
 def gameLoop(difficulty):
-
+    orderOfRemoved = []
     running = True
     selfKill = False
+    rowsClimbed = 0
+    # TODO: increase speed based on rows climbed
+
     # Text display stuff
-    score = 0
+    gameScore = 0
     font = pygame.font.Font('freesansbold.ttf', 26)
-    text = font.render(str(score), True, BLACK)
+    text = font.render(str(gameScore), True, BLACK)
     textRect = text.get_rect()
     textRect.center = (15,25)
     clock = pygame.time.Clock()
@@ -228,14 +229,15 @@ def gameLoop(difficulty):
                     just_removed.add(square)
                     orderOfRemoved.append(square)
                     if len(just_removed) > 7:
-                        for i in range(8):
+                        while len(orderOfRemoved) > 8:
                             just_removed.remove(orderOfRemoved[0])
                             orderOfRemoved.remove(orderOfRemoved[0])
                     break
 
                 else:
-                    score += square.kill()
+                    gameScore += square.kill()
                     pygame.mixer.Channel(1).play(fxLineClear)
+                    rowsClimbed += 1
                     game_board.remove(square)
                     all_sprites_list.remove(square)
                     just_removed.add(square)
@@ -243,7 +245,7 @@ def gameLoop(difficulty):
 
                     # keeps track of the last 8 tiles so that they may be displayed again when the player loses
                     if len(just_removed) > 7:
-                        for i in range(8):
+                        while len(orderOfRemoved) > 8:
                             just_removed.remove(orderOfRemoved[0])
                             orderOfRemoved.remove(orderOfRemoved[0])
 
@@ -261,7 +263,7 @@ def gameLoop(difficulty):
         screen.fill(background)
         # Display score
 
-        text = font.render("Score: " + str(score), True, BLACK)
+        text = font.render("Score: " + str(gameScore), True, BLACK)
         screen.blit(text,textRect)
         #
         game_board.update(event_list)
@@ -271,6 +273,7 @@ def gameLoop(difficulty):
 
 
         clock.tick(difficulty)
+        # default 10
 
 
 
@@ -285,7 +288,7 @@ def gameLoop(difficulty):
             just_removed.draw(screen)
             pygame.display.update()
 
-    return score
+    return gameScore
 
 
 
