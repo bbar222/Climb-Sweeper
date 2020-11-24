@@ -15,10 +15,16 @@ COLORNULL = (255,255,255)
 COLORHIDDEN = (123,143,93)
 
 
+CLICK_MINE = pygame.event.Event(pygame.USEREVENT, myID=1)
+CLICK_ZERO = pygame.event.Event(pygame.USEREVENT, myID=2)
+
+
 class tile(pygame.sprite.Sprite):
+
 
     def __init__(self, color, image, startRevealed, boardR, boardC):
         super().__init__()
+
         # self.revealed = False
         # self.imageBorder = pygame.Surface([width,height])
         # # pygame.draw.rect(self.imageBorder, color)
@@ -88,11 +94,10 @@ class tile(pygame.sprite.Sprite):
 
 
     def update(self, event_list):
-        CLICK_MINE = pygame.event.Event(pygame.USEREVENT, myID=1)
         # print(event_list)
         for event in event_list:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                self.image.get_rect().move(100,100)
+                # #### wtf is this   self.image.get_rect().move(100,100)
                 if self.rect.collidepoint(event.pos):
 
                     if not self.isRevealed:
@@ -100,7 +105,26 @@ class tile(pygame.sprite.Sprite):
                     self.isFlag = False
                     if FieldMaker.field[self.boardR, self.boardC] == FieldMaker.tiles.get("mine"):
                         pygame.event.post(CLICK_MINE)
-                        #   TODO: Auto-clear other surrounding zeroes
+                if FieldMaker.field[self.boardR, self.boardC] == FieldMaker.tiles.get("empty"):
+                    # for all tiles which are 0:
+                    pass
+                    # if self.boardR != 99 and self.boardR != 0 and self.boardC != 0 and FieldMaker.field[self.boardR, self.boardC - 1] == FieldMaker.tiles.get("empty") and FieldMaker.field[self.boardR - 1, self.boardC] == FieldMaker.tiles.get("empty") and FieldMaker.field[self.boardR + 1, self.boardC] == FieldMaker.tiles.get("empty"):
+                    #     self.image.fill(BLUE)
+
+                    # https://stackoverflow.com/questions/19106911/recursive-minesweeper-0-fill
+                    # maybe useful ?
+
+
+
+
+                    #   TODO: Auto-clear other surrounding zeroes
+                  # zeroLoc = event.pos
+                  #  self.revealArea(self, zeroLoc)
+                    #print(self.rect.x,",",self.rect.y, "EVENTPOS = ",event.pos[0],",",event.pos[1])
+                    # if abs(self.rect.centerx - event.pos[0]) < 60:
+                    #     self.image.fill(BLUE)
+
+
 
 
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
@@ -126,7 +150,13 @@ class tile(pygame.sprite.Sprite):
             self.image = self.unrevealedTile
 
 
+    def revealArea(self, location):
+        pass
 
 
 
+    def reveal(self, curRow, curCol):
+        if FieldMaker.field[self.boardR+1, self.boardC] == FieldMaker.field[curRow, curCol]:
+            print("hehehehehe")
 
+            # self.image.fill(BLUE)

@@ -5,13 +5,13 @@ field = []
 tiles = {"mine":-1,"empty":0}
 
 
-def newBoard(ROWSIZE):
+def newBoard(ROWSIZE, MINEDENSITY):
     global field
     field = np.random.randint(0, 101, (ROWSIZE, 8))
 
     for row in range(field.shape[0]):
         for col in range(field.shape[1]):
-            if field[row][col] >= 85:
+            if field[row][col] >= MINEDENSITY:
                 field[row][col] = tiles.get("mine")
             else:
                 field[row][col] = tiles.get("empty")
@@ -73,7 +73,6 @@ def newBoard(ROWSIZE):
     #     print()
 
     return field
-
 
 
 

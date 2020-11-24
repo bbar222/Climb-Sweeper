@@ -8,7 +8,7 @@ fxMineClicked = pygame.mixer.Sound("resources/sounds/mineClicked.wav")
 fxTileClear = pygame.mixer.Sound("resources/sounds/tileCleared.wav")
 fxFlagPlaced = pygame.mixer.Sound("resources/sounds/flagPlaced.wav")
 fxStartGame = pygame.mixer.Sound("resources/sounds/recycle.wav")
-
+# TODO: two audio channels for overlapping sounds
 fxLineClear.set_volume(.1)
 fxMineClicked.set_volume(.1)
 fxTileClear.set_volume(.1)
@@ -36,10 +36,6 @@ PURPLE = (160,32,240)
 ORANGE = (255, 165, 0)
 BROWN = (150,75,0)
 
-
-
-
-
 background = (53,115,176)
 game_board = pygame.sprite.Group()
 all_sprites_list = pygame.sprite.Group()
@@ -48,12 +44,31 @@ just_removed = pygame.sprite.Group()
 orderOfRemoved = []
 
 ROWSIZE = 100
+MINEDENSITY = 85
+
+# sets highscore
+global userHighScore
+highScoreFile = open("highscore.txt", "r")
+savedScore = highScoreFile.readline()
+highScoreFile.close()
+
+
+if savedScore == "":
+    highScoreFile = open("highscore.txt", "w")
+    highScoreFile.write("0")
+    highScoreFile.close()
+    userHighScore = 0
+else:
+    userHighScore = savedScore
+
 
 
 def titleLoop():
     running = True
-    FieldMaker.newBoard(ROWSIZE)
+    FieldMaker.newBoard(ROWSIZE, MINEDENSITY)
     numTiles = 0
+    rowsClimbed = 0
+    # TODO: increase speed based on rows climbed
     all_sprites_list.empty()
     game_board.empty()
     just_removed.empty()
@@ -101,10 +116,15 @@ def titleLoop():
             all_sprites_list.add(boardTile)
 
     font = pygame.font.Font('freesansbold.ttf', 50)
+    subtitleFont = pygame.font.Font('freesansbold.ttf', 35
+                                    )
     titleText = font.render("CLIMB-SWEEPER", True, BLACK)
     titleTextRect = titleText.get_rect()
     titleTextRect.center = (width / 2, height / 5)
 
+    highScoreText = subtitleFont.render("Highscore: " + str(userHighScore), True, BLACK)
+    highScoreTextRect = highScoreText.get_rect()
+    highScoreTextRect.center = (width / 2, height / 5 + 50)
 
     startText = font.render("START", True, ORANGE)
     startTextRect = startText.get_rect()
@@ -147,6 +167,8 @@ def titleLoop():
 
         pygame.draw.rect(screen, BLACK, exitButtonRect, 10, 10)
         screen.blit(exitText, exitTextRect)
+
+        screen.blit(highScoreText, highScoreTextRect)
 
         pygame.display.update()
 
@@ -231,6 +253,10 @@ def gameLoop(difficulty):
 
 
 
+
+
+
+
         screen.fill(background)
         # Display score
 
@@ -245,7 +271,8 @@ def gameLoop(difficulty):
 
         clock.tick(difficulty)
 
-    print(len(just_removed))
+
+
     if not selfKill:
         for _ in range(55):
             for square in just_removed:
@@ -257,6 +284,8 @@ def gameLoop(difficulty):
             just_removed.draw(screen)
             pygame.display.update()
 
+    return score
+
 
 
 def deadOverlay():
@@ -267,6 +296,7 @@ def deadOverlay():
     returnTextRect.center = (60, height - 50)
 
 
+
     returnButton = pygame.Surface((100, 50), pygame.SRCALPHA)
     returnButtonRect = returnButton.get_rect()
     returnButtonRect.center = (60, height - 50)
@@ -275,6 +305,7 @@ def deadOverlay():
     screen.blit(returnText, returnTextRect)
 
     pygame.display.update()
+
 
     while running:
         event_list = pygame.event.get()
@@ -292,6 +323,13 @@ def deadOverlay():
 
 
 while True:
+    # TODO: Add powerups like time stopping
     titleLoop()
-    gameLoop(difficulty=10)
+    # TODO: Prompt user for difficulty via button (speed and mine density)
+    score = gameLoop(difficulty=10)
     deadOverlay()
+    if int(userHighScore) < score:
+        userHighScore = score
+        highScoreFile = open("highscore.txt", "w")
+        highScoreFile.write(str(score))
+        highScoreFile.close()
