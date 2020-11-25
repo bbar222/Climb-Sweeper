@@ -72,6 +72,8 @@ def newBoard(ROWSIZE, MINEDENSITY):
     #         print(co,end="\t")
     #     print()
 
+    print(field)
+
     return field
 
 

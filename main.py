@@ -40,14 +40,15 @@ BROWN = (150,75,0)
 background = (53,115,176)
 game_board = pygame.sprite.Group()
 all_sprites_list = pygame.sprite.Group()
+visibleSquares = pygame.sprite.Group()
 
 just_removed = pygame.sprite.Group()
 orderOfRemoved = []
 
-ROWSIZE = 10
+ROWSIZE = 8192
 MINEDENSITY = 95
 
-# sets highscore
+# sets saved highscore
 global userHighScore
 highScoreFile = open("highscore.txt", "r")
 savedScore = highScoreFile.readline()
@@ -63,56 +64,61 @@ else:
     userHighScore = savedScore
 
 
+def printBoard(numTiles, currentRow):
+    row = currentRow
+    for col in range(8):
+        currentTile = FieldMaker.field[row][col]
+        if 0 <= numTiles < 16:
+            startRevealed = True
+        else:
+            startRevealed = False
+        if currentTile == -1 and 0 <= numTiles < 16:
+            boardTile = tile(RED, "resources/images/tileMine.png", not startRevealed, row, col)
+        elif currentTile == -1:
+            boardTile = tile(RED, "resources/images/tileMine.png", startRevealed, row, col)
+        elif currentTile == 0:
+            boardTile = tile(GRAY, "resources/images/tileEmpty.png", startRevealed, row, col)
+        elif currentTile == 1:
+            boardTile = tile(BLACK, "resources/images/tileOne.png", startRevealed, row, col)
+        elif currentTile == 2:
+            boardTile = tile(BROWN, "resources/images/tileTwo.png", startRevealed, row, col)
+        elif currentTile == 3:
+            boardTile = tile(YELLOW, "resources/images/tileThree.png", startRevealed, row, col)
+        elif currentTile == 4:
+            boardTile = tile(GREEN, "resources/images/tileFour.png", startRevealed, row, col)
+        elif currentTile == 5:
+            boardTile = tile(BLUE, "resources/images/tileFive.png", startRevealed, row, col)
+        elif currentTile == 6:
+            boardTile = tile(PURPLE, "resources/images/tileSix.png", startRevealed, row, col)
+        elif currentTile == 7:
+            boardTile = tile(CYAN, "resources/images/tileSeven.png", startRevealed, row, col)
+        elif currentTile == 8:
+            boardTile = tile(MAGENTA, "resources/images/tileEight.png", startRevealed, row, col)
+        else:
+            boardTile = tile(ORANGE, "resources/images/tileFlag.png", startRevealed, row, col)
+        boardTile.rect.x = width / 6 + col * 60
+        if numTiles < 80:
+           # print("1")
+            boardTile.rect.y = height - row * 80 - 130
+        else:
+          #  print("2")
+            boardTile.rect.y = -160
+        numTiles += 1
+        game_board.add(boardTile)
+        all_sprites_list.add(boardTile)
+        #print("currently",numTiles)
+
+    print("CREATED ROW", numTiles/8)
+    return numTiles
+
 
 def titleLoop():
     running = True
     FieldMaker.newBoard(ROWSIZE, MINEDENSITY)
-    numTiles = 0
     all_sprites_list.empty()
     game_board.empty()
     just_removed.empty()
-
-    # Creates mine field
-
-
-   # print(FieldMaker.addMoreLines())
-    for row in range(ROWSIZE):
-        for col in range(FieldMaker.field.shape[1]):
-            currentTile = FieldMaker.field[row][col]
-            if 0 <= numTiles < 16:
-                startRevealed = True
-            else:
-                startRevealed = False
-            if currentTile == -1 and 0 <= numTiles < 16:
-                boardTile = tile(RED, "resources/images/tileMine.png", not startRevealed, row, col)
-            elif currentTile == -1:
-                boardTile = tile(RED, "resources/images/tileMine.png", startRevealed, row, col)
-            elif currentTile == 0:
-                boardTile = tile(GRAY, "resources/images/tileEmpty.png", startRevealed, row, col)
-            elif currentTile == 1:
-                boardTile = tile(BLACK, "resources/images/tileOne.png", startRevealed, row, col)
-            elif currentTile == 2:
-                boardTile = tile(BROWN, "resources/images/tileTwo.png", startRevealed, row, col)
-            elif currentTile == 3:
-                boardTile = tile(YELLOW, "resources/images/tileThree.png", startRevealed, row, col)
-            elif currentTile == 4:
-                boardTile = tile(GREEN, "resources/images/tileFour.png", startRevealed, row, col)
-            elif currentTile == 5:
-                boardTile = tile(BLUE, "resources/images/tileFive.png", startRevealed, row, col)
-            elif currentTile == 6:
-                boardTile = tile(PURPLE, "resources/images/tileSix.png", startRevealed, row, col)
-            elif currentTile == 7:
-                boardTile = tile(CYAN, "resources/images/tileSeven.png", startRevealed, row, col)
-            elif currentTile == 8:
-                boardTile = tile(MAGENTA, "resources/images/tileEight.png", startRevealed, row, col)
-            else:
-                boardTile = tile(ORANGE, "resources/images/tileFlag.png", startRevealed, row, col)
-            boardTile.rect.x = width / 6 + col * 60
-            boardTile.rect.y = height - row * 80 - 130
-
-            numTiles += 1
-            game_board.add(boardTile)
-            all_sprites_list.add(boardTile)
+    visibleSquares.empty()
 
     font = pygame.font.Font('freesansbold.ttf', 50)
     subtitleFont = pygame.font.Font('freesansbold.ttf', 35
@@ -175,10 +181,18 @@ def titleLoop():
 
 
 def gameLoop(difficulty):
+
+
+    # Creates mine field
+    totalTiles = 0
+    displayedRows = 10
+    for currentRow in range(displayedRows):
+        totalTiles = printBoard(totalTiles, currentRow)
+
     orderOfRemoved = []
     running = True
     selfKill = False
-    rowsClimbed = 0
+    tilesCleared = 0
     # TODO: increase speed based on rows climbed
 
     # Text display stuff
@@ -237,7 +251,8 @@ def gameLoop(difficulty):
                 else:
                     gameScore += square.kill()
                     pygame.mixer.Channel(1).play(fxLineClear)
-                    rowsClimbed += 1
+                    tilesCleared += 1
+                   # print(tilesCleared)
                     game_board.remove(square)
                     all_sprites_list.remove(square)
                     just_removed.add(square)
@@ -254,7 +269,11 @@ def gameLoop(difficulty):
                 # print(len(just_removed))
                 # square.rect.y = 0
 
+        if int(tilesCleared/8) > displayedRows - 10:
+            print("drawing row #", displayedRows)
+            totalTiles = printBoard(totalTiles, displayedRows)
 
+            displayedRows += 1
 
 
 
@@ -267,7 +286,13 @@ def gameLoop(difficulty):
         screen.blit(text,textRect)
         #
         game_board.update(event_list)
-        all_sprites_list.draw(screen)
+        # all_sprites_list.draw(screen)
+        for square in all_sprites_list:
+            if square.rect.y > -100:
+                visibleSquares.add(square)
+            elif square.rect.y > height:
+                visibleSquares.remove(square)
+        visibleSquares.draw(screen)
         just_removed.draw(screen)
         pygame.display.update()
 
