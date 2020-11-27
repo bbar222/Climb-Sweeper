@@ -13,7 +13,12 @@ CYAN = (0, 255, 255)
 MAGENTA = (255, 0, 255)
 COLORNULL = (255,255,255)
 COLORHIDDEN = (123,143,93)
+PURPLE = (160,32,240)
+ORANGE = (255, 165, 0)
+BROWN = (150,75,0)
+LIGHTBLUE = (0,128,255)
 
+screen = pygame.display.set_mode((700, 640))
 
 CLICK_MINE = pygame.event.Event(pygame.USEREVENT, myID=1)
 CLICK_ZERO = pygame.event.Event(pygame.USEREVENT, myID=2)
@@ -52,14 +57,19 @@ class tile(pygame.sprite.Sprite):
         self.revealedTile = pygame.image.load(image)
         pygame.draw.rect(self.revealedTile, color, self.revealedTile.get_rect(), 5)
 
+        #
+        # self.tileBG = pygame.Surface((50,50))
+        # self.tileBG.set_alpha(128)
+        # self.tileBG.fill((RED))
+        # screen.blit(self.tileBG, (100,100))
 
         self.unrevealedTile = pygame.Surface((50, 50), pygame.SRCALPHA)
         # pygame.draw.rect(self.unrevealedTile, color, self.unrevealedTile.get_rect(),50)
         pygame.draw.rect(self.unrevealedTile, (50, 200, 200), self.unrevealedTile.get_rect())
 
         self.flag_image = pygame.Surface((50,50), pygame.SRCALPHA)
-        self.flag_image = pygame.image.load("resources/images/tileFlag.png")
-        pygame.draw.rect(self.flag_image, BLACK, self.flag_image.get_rect(),5)
+        self.flag_image = pygame.image.load("resources/images/tileFlag - transp.png")
+        pygame.draw.rect(self.flag_image, ORANGE, self.flag_image.get_rect(),5)
 
         self.image = pygame.image.load(image)
         self.rect = self.image.get_rect()

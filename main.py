@@ -36,6 +36,7 @@ NULLCOLOR = (255, 255, 255)
 PURPLE = (160,32,240)
 ORANGE = (255, 165, 0)
 BROWN = (150,75,0)
+LIGHTBLUE = (0,128,255)
 
 background = (53,115,176)
 game_board = pygame.sprite.Group()
@@ -72,27 +73,27 @@ def printBoard(numTiles, currentRow):
         else:
             startRevealed = False
         if currentTile == -1 and 0 <= numTiles < 16:
-            boardTile = tile(RED, "resources/images/tileMine.png", not startRevealed, row, col)
+            boardTile = tile(RED, "resources/images/tileMine - transp.png", not startRevealed, row, col)
         elif currentTile == -1:
-            boardTile = tile(RED, "resources/images/tileMine.png", startRevealed, row, col)
+            boardTile = tile(RED, "resources/images/tileMine - transp.png", startRevealed, row, col)
         elif currentTile == 0:
-            boardTile = tile(GRAY, "resources/images/tileEmpty.png", startRevealed, row, col)
+            boardTile = tile(GRAY, "resources/images/tileEmpty - transp.png", startRevealed, row, col)
         elif currentTile == 1:
-            boardTile = tile(BLACK, "resources/images/tileOne.png", startRevealed, row, col)
+            boardTile = tile(LIGHTBLUE, "resources/images/tileOne - transp.png", startRevealed, row, col)
         elif currentTile == 2:
-            boardTile = tile(BROWN, "resources/images/tileTwo.png", startRevealed, row, col)
+            boardTile = tile(BROWN, "resources/images/tileTwo - transp.png", startRevealed, row, col)
         elif currentTile == 3:
-            boardTile = tile(YELLOW, "resources/images/tileThree.png", startRevealed, row, col)
+            boardTile = tile(YELLOW, "resources/images/tileThree - transp.png", startRevealed, row, col)
         elif currentTile == 4:
-            boardTile = tile(GREEN, "resources/images/tileFour.png", startRevealed, row, col)
+            boardTile = tile(GREEN, "resources/images/tileFour - transp.png", startRevealed, row, col)
         elif currentTile == 5:
-            boardTile = tile(BLUE, "resources/images/tileFive.png", startRevealed, row, col)
+            boardTile = tile(BLUE, "resources/images/tileFive - transp.png", startRevealed, row, col)
         elif currentTile == 6:
-            boardTile = tile(PURPLE, "resources/images/tileSix.png", startRevealed, row, col)
+            boardTile = tile(PURPLE, "resources/images/tileSix - transp.png", startRevealed, row, col)
         elif currentTile == 7:
-            boardTile = tile(CYAN, "resources/images/tileSeven.png", startRevealed, row, col)
+            boardTile = tile(CYAN, "resources/images/tileSeven - transp.png", startRevealed, row, col)
         elif currentTile == 8:
-            boardTile = tile(MAGENTA, "resources/images/tileEight.png", startRevealed, row, col)
+            boardTile = tile(MAGENTA, "resources/images/tileEight - transp.png", startRevealed, row, col)
         else:
             boardTile = tile(ORANGE, "resources/images/tileFlag.png", startRevealed, row, col)
         boardTile.rect.x = width / 6 + col * 60
@@ -209,6 +210,8 @@ def titleLoop():
         screen.blit(highScoreText, highScoreTextRect)
 
         pygame.display.update()
+
+
     return initDifficulty
 
 
@@ -228,7 +231,6 @@ def gameLoop(initDifficulty):
     running = True
     selfKill = False
     tilesCleared = 0
-    # TODO: increase speed based on rows climbed
 
     # Text display stuff
     gameScore = 0
@@ -397,7 +399,6 @@ def deadOverlay():
 while True:
     # TODO: Add powerups like time stopping
     startDifficulty = titleLoop()
-    # TODO: Prompt user for difficulty via button (speed and mine density)
     score = gameLoop(startDifficulty)
     deadOverlay()
     if int(userHighScore) < score:
