@@ -43,7 +43,6 @@ all_sprites_list = pygame.sprite.Group()
 visibleSquares = pygame.sprite.Group()
 
 just_removed = pygame.sprite.Group()
-orderOfRemoved = []
 
 ROWSIZE = 8192
 MINEDENSITY = 95
@@ -114,12 +113,12 @@ def printBoard(numTiles, currentRow):
 
 def titleLoop():
     running = True
-    FieldMaker.newBoard(ROWSIZE, MINEDENSITY)
     all_sprites_list.empty()
     game_board.empty()
     just_removed.empty()
     visibleSquares.empty()
 
+    initDifficulty = 10
     font = pygame.font.Font('freesansbold.ttf', 50)
     subtitleFont = pygame.font.Font('freesansbold.ttf', 35
                                     )
@@ -131,13 +130,31 @@ def titleLoop():
     highScoreTextRect = highScoreText.get_rect()
     highScoreTextRect.center = (width / 2, height / 5 + 50)
 
-    startText = font.render("START", True, ORANGE)
+    startText = font.render("NORMAL", True, ORANGE)
     startTextRect = startText.get_rect()
     startTextRect.center = (width / 2, height / 2)
 
     startButton = pygame.Surface((250, 75), pygame.SRCALPHA)
     startButtonRect = startButton.get_rect()
     startButtonRect.center = (width/2, height/2)
+
+
+    startEasyText = font.render("EASY", True, ORANGE)
+    startEasyTextRect = startEasyText.get_rect()
+    startEasyTextRect.center = (width / 6, height / 2)
+
+    startEasyButton = pygame.Surface((175,75), pygame.SRCALPHA)
+    startEasyButtonRect = startEasyButton.get_rect()
+    startEasyButtonRect.center = (width/6, height/2)
+
+
+    startHardText = font.render("HARD", True, ORANGE)
+    startHardTextRect = startHardText.get_rect()
+    startHardTextRect.center = (width - width/6, height / 2)
+
+    startHardButton = pygame.Surface((175,75), pygame.SRCALPHA)
+    startHardButtonRect = startHardButton.get_rect()
+    startHardButtonRect.center = (width - width/6,height/2)
 
 
     exitText = font.render("EXIT", True, ORANGE)
@@ -160,6 +177,16 @@ def titleLoop():
                 if startButtonRect.collidepoint(event.pos):
                     fxStartGame.play()
                     running = False
+                    initDifficulty = [10,85]
+                    # initDifficulty =  Speed, mine density
+                elif startEasyTextRect.collidepoint(event.pos):
+                    fxStartGame.play()
+                    running = False
+                    initDifficulty = [7,90]
+                elif startHardTextRect.collidepoint(event.pos):
+                    fxStartGame.play()
+                    running = False
+                    initDifficulty = [10,80]
                 elif exitButtonRect.collidepoint(event.pos):
                     pygame.quit()
 
@@ -170,25 +197,33 @@ def titleLoop():
         pygame.draw.rect(screen, BLACK, startButtonRect, 10, 10)
         screen.blit(startText, startTextRect)
 
+        pygame.draw.rect(screen, BLACK, startEasyButtonRect, 10, 10)
+        screen.blit(startEasyText, startEasyTextRect)
+
+        pygame.draw.rect(screen, BLACK, startHardButtonRect, 10, 10)
+        screen.blit(startHardText, startHardTextRect)
+
         pygame.draw.rect(screen, BLACK, exitButtonRect, 10, 10)
         screen.blit(exitText, exitTextRect)
 
         screen.blit(highScoreText, highScoreTextRect)
 
         pygame.display.update()
+    return initDifficulty
 
 
 
-
-def gameLoop(difficulty):
-
-
+def gameLoop(initDifficulty):
+    scrollSpeed = initDifficulty[0]
+    density = initDifficulty[1]
+    FieldMaker.newBoard(ROWSIZE, density)
     # Creates mine field
     totalTiles = 0
     displayedRows = 10
     for currentRow in range(displayedRows):
         totalTiles = printBoard(totalTiles, currentRow)
 
+    completedRows = []
     orderOfRemoved = []
     running = True
     selfKill = False
@@ -198,9 +233,12 @@ def gameLoop(difficulty):
     # Text display stuff
     gameScore = 0
     font = pygame.font.Font('freesansbold.ttf', 26)
-    text = font.render(str(gameScore), True, BLACK)
-    textRect = text.get_rect()
-    textRect.center = (15,25)
+    scoreTextWords = font.render("Score:", True, BLACK)
+    scoreTextWordsRect = scoreTextWords.get_rect()
+    scoreTextWordsRect.center = (55,25)
+    scoreText = font.render(str(gameScore), True, BLACK)
+    scoreTextRect = scoreText.get_rect()
+    scoreTextRect.center = (55,55)
     clock = pygame.time.Clock()
     while running:
         event_list = pygame.event.get()
@@ -250,7 +288,7 @@ def gameLoop(difficulty):
 
                 else:
                     gameScore += square.kill()
-                    pygame.mixer.Channel(1).play(fxLineClear)
+                    pygame.mixer.Channel(2).play(fxLineClear)
                     tilesCleared += 1
                    # print(tilesCleared)
                     game_board.remove(square)
@@ -281,9 +319,10 @@ def gameLoop(difficulty):
 
         screen.fill(background)
         # Display score
-
-        text = font.render("Score: " + str(gameScore), True, BLACK)
-        screen.blit(text,textRect)
+        screen.blit(scoreTextWords,scoreTextWordsRect)
+        # Re-render text because score may have updated
+        scoreText = font.render(str(gameScore), True, BLACK)
+        screen.blit(scoreText,scoreTextRect)
         #
         game_board.update(event_list)
         # all_sprites_list.draw(screen)
@@ -297,9 +336,13 @@ def gameLoop(difficulty):
         pygame.display.update()
 
 
-        clock.tick(difficulty)
+        if tilesCleared % 8 == 0 and tilesCleared/8 not in completedRows:
+            completedRows.append(tilesCleared/8)
+            scrollSpeed += 0.25
+            print("difficulty is",scrollSpeed)
         # default 10
 
+        clock.tick(scrollSpeed)
 
 
     if not selfKill:
@@ -353,9 +396,9 @@ def deadOverlay():
 
 while True:
     # TODO: Add powerups like time stopping
-    titleLoop()
+    startDifficulty = titleLoop()
     # TODO: Prompt user for difficulty via button (speed and mine density)
-    score = gameLoop(difficulty=10)
+    score = gameLoop(startDifficulty)
     deadOverlay()
     if int(userHighScore) < score:
         userHighScore = score
