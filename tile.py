@@ -53,7 +53,7 @@ class tile(pygame.sprite.Sprite):
 
         self.boardR = boardR
         self.boardC = boardC
-        self.revealedTile = pygame.Surface((50, 50), pygame.SRCALPHA)
+     #  self.revealedTile = pygame.Surface((50, 50), pygame.SRCALPHA)
         self.revealedTile = pygame.image.load(image)
         pygame.draw.rect(self.revealedTile, color, self.revealedTile.get_rect(), 5)
 
@@ -65,9 +65,9 @@ class tile(pygame.sprite.Sprite):
 
         self.unrevealedTile = pygame.Surface((50, 50), pygame.SRCALPHA)
         # pygame.draw.rect(self.unrevealedTile, color, self.unrevealedTile.get_rect(),50)
-        pygame.draw.rect(self.unrevealedTile, (50, 200, 200), self.unrevealedTile.get_rect())
+        pygame.draw.rect(self.unrevealedTile, (75, 175, 200), self.unrevealedTile.get_rect())
 
-        self.flag_image = pygame.Surface((50,50), pygame.SRCALPHA)
+       # self.flag_image = pygame.Surface((50,50), pygame.SRCALPHA)
         self.flag_image = pygame.image.load("resources/images/tileFlag - transp.png")
         pygame.draw.rect(self.flag_image, ORANGE, self.flag_image.get_rect(),5)
 

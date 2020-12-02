@@ -46,7 +46,6 @@ visibleSquares = pygame.sprite.Group()
 just_removed = pygame.sprite.Group()
 
 ROWSIZE = 8192
-MINEDENSITY = 95
 
 # sets saved highscore
 global userHighScore
@@ -187,7 +186,7 @@ def titleLoop():
                 elif startHardTextRect.collidepoint(event.pos):
                     fxStartGame.play()
                     running = False
-                    initDifficulty = [10,80]
+                    initDifficulty = [11,82]
                 elif exitButtonRect.collidepoint(event.pos):
                     pygame.quit()
 
@@ -220,6 +219,8 @@ def gameLoop(initDifficulty):
     scrollSpeed = initDifficulty[0]
     density = initDifficulty[1]
     FieldMaker.newBoard(ROWSIZE, density)
+
+    tileSpeed = 1
     # Creates mine field
     totalTiles = 0
     displayedRows = 10
@@ -232,6 +233,7 @@ def gameLoop(initDifficulty):
     selfKill = False
     tilesCleared = 0
 
+
     # Text display stuff
     gameScore = 0
     font = pygame.font.Font('freesansbold.ttf', 26)
@@ -242,6 +244,17 @@ def gameLoop(initDifficulty):
     scoreTextRect = scoreText.get_rect()
     scoreTextRect.center = (55,55)
     clock = pygame.time.Clock()
+
+
+    # Display time-stop
+    clockImageRegular = pygame.image.load("resources/images/clock.png")
+    clockImage = clockImageRegular
+    clockImageCooldown = pygame.image.load("resources/images/clock on cooldown.png")
+    clockRect = pygame.Rect(width-75,height-75,50,50)
+    powerEndTime = 0
+    powerCooldownTime = 0
+
+
     while running:
         event_list = pygame.event.get()
         for event in event_list:
@@ -264,6 +277,12 @@ def gameLoop(initDifficulty):
                 for square in game_board:
                     if square.rect.collidepoint(event.pos):
                         fxTileClear.play()
+                if clockRect.collidepoint(event.pos) and powerCooldownTime == 0:
+                    clockImage = clockImageCooldown
+                    timeClicked = pygame.time.get_ticks()
+                    powerEndTime = timeClicked + 5000
+                    powerCooldownTime = timeClicked + 10000
+                    print("click clck")
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                 for square in game_board:
                     if square.rect.collidepoint(event.pos):
@@ -272,7 +291,7 @@ def gameLoop(initDifficulty):
 
 
         for square in game_board:
-            square.rect.y += 1
+            square.rect.y += tileSpeed
             if square.rect.y > height:
                 if square.kill() == "dead":
                     fxMineClicked.play()
@@ -286,13 +305,12 @@ def gameLoop(initDifficulty):
                         while len(orderOfRemoved) > 8:
                             just_removed.remove(orderOfRemoved[0])
                             orderOfRemoved.remove(orderOfRemoved[0])
-                    break
+                    continue
 
                 else:
                     gameScore += square.kill()
                     pygame.mixer.Channel(2).play(fxLineClear)
                     tilesCleared += 1
-                   # print(tilesCleared)
                     game_board.remove(square)
                     all_sprites_list.remove(square)
                     just_removed.add(square)
@@ -303,6 +321,7 @@ def gameLoop(initDifficulty):
                         while len(orderOfRemoved) > 8:
                             just_removed.remove(orderOfRemoved[0])
                             orderOfRemoved.remove(orderOfRemoved[0])
+                            print(len(orderOfRemoved))
 
 
 
@@ -319,7 +338,29 @@ def gameLoop(initDifficulty):
 
 
 
+
+
+
         screen.fill(background)
+
+
+        # Display time stop powerup
+        if pygame.time.get_ticks() > powerCooldownTime != 0:
+            clockImage = clockImageRegular
+            powerCooldownTime = 0
+            # time stop over
+        elif pygame.time.get_ticks() > powerEndTime != 0:
+            clockImage = clockImageCooldown
+            powerEndTime = 0
+            tileSpeed = 1
+            # time stop on cooldown
+        elif pygame.time.get_ticks() < powerEndTime != 0:
+            tileSpeed = 0
+            # time stop active
+        screen.blit(clockImage, clockRect)
+
+
+
         # Display score
         screen.blit(scoreTextWords,scoreTextWordsRect)
         # Re-render text because score may have updated
@@ -331,16 +372,16 @@ def gameLoop(initDifficulty):
         for square in all_sprites_list:
             if square.rect.y > -100:
                 visibleSquares.add(square)
-            elif square.rect.y > height:
+            elif square.rect.y >= height:
                 visibleSquares.remove(square)
         visibleSquares.draw(screen)
-        just_removed.draw(screen)
+        #just_removed.draw(screen)
         pygame.display.update()
 
 
         if tilesCleared % 8 == 0 and tilesCleared/8 not in completedRows:
             completedRows.append(tilesCleared/8)
-            scrollSpeed += 0.25
+            scrollSpeed += 0.20
             print("difficulty is",scrollSpeed)
         # default 10
 
@@ -397,7 +438,6 @@ def deadOverlay():
 
 
 while True:
-    # TODO: Add powerups like time stopping
     startDifficulty = titleLoop()
     score = gameLoop(startDifficulty)
     deadOverlay()
