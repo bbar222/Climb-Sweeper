@@ -250,6 +250,7 @@ def gameLoop(initDifficulty):
     clockImageRegular = pygame.image.load("resources/images/clock.png")
     clockImage = clockImageRegular
     clockImageCooldown = pygame.image.load("resources/images/clock on cooldown.png")
+    clockImageActive = pygame.image.load("resources/images/clock Active.png")
     clockRect = pygame.Rect(width-75,height-75,50,50)
     powerEndTime = 0
     powerCooldownTime = 0
@@ -281,7 +282,7 @@ def gameLoop(initDifficulty):
                     clockImage = clockImageCooldown
                     timeClicked = pygame.time.get_ticks()
                     powerEndTime = timeClicked + 5000
-                    powerCooldownTime = timeClicked + 10000
+                    powerCooldownTime = timeClicked + 45000
                     print("click clck")
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                 for square in game_board:
@@ -355,6 +356,7 @@ def gameLoop(initDifficulty):
             tileSpeed = 1
             # time stop on cooldown
         elif pygame.time.get_ticks() < powerEndTime != 0:
+            clockImage = clockImageActive
             tileSpeed = 0
             # time stop active
         screen.blit(clockImage, clockRect)
