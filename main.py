@@ -9,14 +9,13 @@ fxTileClear = pygame.mixer.Sound("resources/sounds/tileCleared.wav")
 fxFlagPlaced = pygame.mixer.Sound("resources/sounds/flagPlaced.wav")
 fxStartGame = pygame.mixer.Sound("resources/sounds/recycle.wav")
 
-
 fxLineClear.set_volume(1)
 fxMineClicked.set_volume(.1)
 fxTileClear.set_volume(.1)
 fxFlagPlaced.set_volume(.1)
 fxStartGame.set_volume(.2)
 
-
+fontStyle = 'freesansbold.ttf'
 
 size = 700, 640
 width, height = size
@@ -97,17 +96,13 @@ def printBoard(numTiles, currentRow):
             boardTile = tile(ORANGE, "resources/images/tileFlag.png", startRevealed, row, col)
         boardTile.rect.x = width / 6 + col * 60
         if numTiles < 80:
-           # print("1")
             boardTile.rect.y = height - row * 80 - 130
         else:
-          #  print("2")
             boardTile.rect.y = -160
         numTiles += 1
         game_board.add(boardTile)
         all_sprites_list.add(boardTile)
-        #print("currently",numTiles)
 
-    print("CREATED ROW", numTiles/8)
     return numTiles
 
 
@@ -119,8 +114,8 @@ def titleLoop():
     visibleSquares.empty()
 
     initDifficulty = 10
-    font = pygame.font.Font('freesansbold.ttf', 50)
-    subtitleFont = pygame.font.Font('freesansbold.ttf', 35
+    font = pygame.font.Font(fontStyle, 50)
+    subtitleFont = pygame.font.Font(fontStyle, 35
                                     )
     titleText = font.render("CLIMB-SWEEPER", True, BLACK)
     titleTextRect = titleText.get_rect()
@@ -161,7 +156,7 @@ def titleLoop():
     exitTextRect = exitText.get_rect()
     exitTextRect.center = (width / 2, height / 1.5)
 
-    exitButton = pygame.Surface((250, 75), pygame.SRCALPHA)
+    exitButton = pygame.Surface((175, 75), pygame.SRCALPHA)
     exitButtonRect = exitButton.get_rect()
     exitButtonRect.center = (width/2, height / 1.5)
 
@@ -177,7 +172,7 @@ def titleLoop():
                 if startButtonRect.collidepoint(event.pos):
                     fxStartGame.play()
                     running = False
-                    initDifficulty = [10,85]
+                    initDifficulty = [10,86]
                     # initDifficulty =  Speed, mine density
                 elif startEasyTextRect.collidepoint(event.pos):
                     fxStartGame.play()
@@ -186,7 +181,7 @@ def titleLoop():
                 elif startHardTextRect.collidepoint(event.pos):
                     fxStartGame.play()
                     running = False
-                    initDifficulty = [11,82]
+                    initDifficulty = [11,81]
                 elif exitButtonRect.collidepoint(event.pos):
                     pygame.quit()
 
@@ -236,7 +231,7 @@ def gameLoop(initDifficulty):
 
     # Text display stuff
     gameScore = 0
-    font = pygame.font.Font('freesansbold.ttf', 26)
+    font = pygame.font.Font(fontStyle, 26)
     scoreTextWords = font.render("Score:", True, BLACK)
     scoreTextWordsRect = scoreTextWords.get_rect()
     scoreTextWordsRect.center = (55,25)
@@ -262,7 +257,7 @@ def gameLoop(initDifficulty):
             if event.type == pygame.QUIT:
                 pygame.quit()
             elif event.type == pygame.USEREVENT:
-                # If mine is clicked event
+                # If mine is clicked do event
                 if event.myID == 1:
                     fxMineClicked.play()
                     print("You clicked on a mine!")
@@ -283,7 +278,6 @@ def gameLoop(initDifficulty):
                     timeClicked = pygame.time.get_ticks()
                     powerEndTime = timeClicked + 5000
                     powerCooldownTime = timeClicked + 45000
-                    print("click clck")
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                 for square in game_board:
                     if square.rect.collidepoint(event.pos):
@@ -322,28 +316,17 @@ def gameLoop(initDifficulty):
                         while len(orderOfRemoved) > 8:
                             just_removed.remove(orderOfRemoved[0])
                             orderOfRemoved.remove(orderOfRemoved[0])
-                            print(len(orderOfRemoved))
 
 
 
-                # print(len(just_removed))
-                # square.rect.y = 0
-
+        # Will render new row if there are less than ten drawn rows
         if int(tilesCleared/8) > displayedRows - 10:
-            print("drawing row #", displayedRows)
             totalTiles = printBoard(totalTiles, displayedRows)
-
             displayedRows += 1
 
 
-
-
-
-
-
-
+        # Visuals rendering:
         screen.fill(background)
-
 
         # Display time stop powerup
         if pygame.time.get_ticks() > powerCooldownTime != 0:
@@ -362,34 +345,30 @@ def gameLoop(initDifficulty):
         screen.blit(clockImage, clockRect)
 
 
-
         # Display score
         screen.blit(scoreTextWords,scoreTextWordsRect)
         # Re-render text because score may have updated
         scoreText = font.render(str(gameScore), True, BLACK)
         screen.blit(scoreText,scoreTextRect)
-        #
+
         game_board.update(event_list)
-        # all_sprites_list.draw(screen)
         for square in all_sprites_list:
             if square.rect.y > -100:
                 visibleSquares.add(square)
             elif square.rect.y >= height:
                 visibleSquares.remove(square)
         visibleSquares.draw(screen)
-        #just_removed.draw(screen)
         pygame.display.update()
 
 
         if tilesCleared % 8 == 0 and tilesCleared/8 not in completedRows:
+            # if new row is completed:
             completedRows.append(tilesCleared/8)
-            scrollSpeed += 0.20
-            print("difficulty is",scrollSpeed)
-        # default 10
+            scrollSpeed += 0.2
 
         clock.tick(scrollSpeed)
 
-
+    # Scrolls the tiles upwards so the player sees what they died to, if they died due to time.
     if not selfKill:
         for _ in range(55):
             for square in just_removed:
@@ -407,11 +386,10 @@ def gameLoop(initDifficulty):
 
 def deadOverlay():
     running = True
-    font = pygame.font.Font('freesansbold.ttf', 25)
+    font = pygame.font.Font(fontStyle, 25)
     returnText = font.render("Menu", True, BLACK)
     returnTextRect = returnText.get_rect()
     returnTextRect.center = (60, height - 50)
-
 
 
     returnButton = pygame.Surface((100, 50), pygame.SRCALPHA)

@@ -56,7 +56,6 @@ def newBoard(ROWSIZE, MINEDENSITY):
 
             if field[row][col] == tiles.get("mine"):
                 # Do not need to check as there is a mine here
-                # print("found a mine. skipping")
                 continue
 
             # Check Above
@@ -66,17 +65,4 @@ def newBoard(ROWSIZE, MINEDENSITY):
             # Check below
             checkBelow(row, col)
 
-    # # Print the board
-    # for ro in field:
-    #     for co in ro:
-    #         print(co,end="\t")
-    #     print()
-
-    print(field)
-
     return field
-
-
-
-
-
