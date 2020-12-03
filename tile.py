@@ -1,4 +1,3 @@
-
 import pygame
 import FieldMaker
 
@@ -11,14 +10,16 @@ BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 CYAN = (0, 255, 255)
 MAGENTA = (255, 0, 255)
-COLORNULL = (255,255,255)
-COLORHIDDEN = (123,143,93)
-PURPLE = (160,32,240)
+COLORNULL = (255, 255, 255)
+COLORHIDDEN = (123, 143, 93)
+PURPLE = (160, 32, 240)
 ORANGE = (255, 165, 0)
-BROWN = (150,75,0)
-LIGHTBLUE = (0,128,255)
+BROWN = (150, 75, 0)
+LIGHTBLUE = (0, 128, 255)
 
 screen = pygame.display.set_mode((700, 640))
+
+# Tile images made by Brian (me)
 
 CLICK_MINE = pygame.event.Event(pygame.USEREVENT, myID=1)
 CLICK_ZERO = pygame.event.Event(pygame.USEREVENT, myID=2)
@@ -26,6 +27,7 @@ CLICK_ZERO = pygame.event.Event(pygame.USEREVENT, myID=2)
 
 class tile(pygame.sprite.Sprite):
 
+    # Concept from https://stackoverflow.com/questions/53660333/pygame-drawing-multiple-rectangles
 
     def __init__(self, color, image, startRevealed, boardR, boardC):
         super().__init__()
@@ -39,14 +41,12 @@ class tile(pygame.sprite.Sprite):
         pygame.draw.rect(self.unrevealedTile, (75, 175, 200), self.unrevealedTile.get_rect())
 
         self.flag_image = pygame.image.load("resources/images/tileFlag - transp.png")
-        pygame.draw.rect(self.flag_image, ORANGE, self.flag_image.get_rect(),5)
+        pygame.draw.rect(self.flag_image, ORANGE, self.flag_image.get_rect(), 5)
 
         self.image = pygame.image.load(image)
         self.rect = self.image.get_rect()
         self.isRevealed = startRevealed
         self.isFlag = False
-
-
 
     def kill(self):
         if self.image == self.flag_image and FieldMaker.field[self.boardR, self.boardC] == FieldMaker.tiles.get("mine"):
@@ -55,12 +55,12 @@ class tile(pygame.sprite.Sprite):
         elif self.image == self.unrevealedTile:
             # print("an unmarked tile escaped! yikes!")
             return "dead"
-        elif self.image == self.flag_image and not FieldMaker.field[self.boardR, self.boardC] == FieldMaker.tiles.get("mine"):
+        elif self.image == self.flag_image and not FieldMaker.field[self.boardR, self.boardC] == FieldMaker.tiles.get(
+                "mine"):
             # print("You falsely flagged a tile!")
             return "dead"
         else:
             return 0
-
 
     def update(self, event_list):
         for event in event_list:

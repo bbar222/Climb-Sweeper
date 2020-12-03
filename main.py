@@ -2,6 +2,7 @@ import pygame
 from tile import tile
 import FieldMaker
 
+# Sounds are remixed from windows 10 alert sounds
 pygame.init()
 fxLineClear = pygame.mixer.Sound("resources/sounds/tilesRemoved.wav")
 fxMineClicked = pygame.mixer.Sound("resources/sounds/mineClicked.wav")
