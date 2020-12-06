@@ -16,16 +16,27 @@ The biggest drawback to this was it would:
   B: Due to my inexperience with object-oriented-programming, I do not think it is possible (with how I had designed the board engine) to auto-clear surrounding zeroes, since each tile was stored as an individual object, and I couldn't figure out how to tell another object to reveal itself because a nearby object was clicked. 
 <br><br>
   C: Because I started with no knowledge and that beginner tutorial, I thought I could make tiny adjustments to how an objects velocity is changed. It turns out you cannot adjust a rect object in pygame by a float value, so I could only traverse the screen in integer values. 
-  Unfortunately, moving at 1 pixel per tick was already much to fast for the climbsweeper board to be going, and this was the slowest option. My only workaround was to slow down the tick speed of the game, so that when the game is moving slower, the actually runs at a lower framerate than if the board was moving fast. This is what made me the most sad.
+  Unfortunately, moving at 1 pixel per tick was already much to fast for the climbsweeper board to be going, and this was the slowest option. My only workaround was to slow down the tick speed of the game, so that when the game is moving slower, the actually runs at a lower framerate than if the board was moving fast. This is what made me the most sad. Almost as sad as the quality of the presentation video on youtube, because I am a computer science man and not a video man, so I couldn't make it as good as I wanted to with free software. 
 <br><br>
 However, I found it funny that my commit history for this project is similar a bell-curve over the course of two weeks because of that big issue I encountered in the middle of the project: each tiny step forward, as well as backward, was a success to me and I found it reasonable to save then.
 
 
 
 -----
+Video Link
+
+https://youtu.be/y4z7p1e0Ato 
+
+
+
+-----
+
+
+
 
 
 Credits:
 All images made by me (Brian) <br>
 Sounds are manually altered windows 10 alert sounds <br>
+
 
